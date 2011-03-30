@@ -1,2 +1,5 @@
 # Ignored Mathematica files shall be prefixed by _
 _*.nb
+
+*.gz
+*.pdf
