@@ -1,6 +1,6 @@
 # Ignored Mathematica files shall be prefixed by _
 _*.nb
-
+*.fdb_latexmk
 *.gz
 *.pdf
 *.pyc
