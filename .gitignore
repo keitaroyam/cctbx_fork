@@ -5,4 +5,4 @@ _*.nb
 *.pdf
 *.pyc
 .DS_Store
-
+*~
