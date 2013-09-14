@@ -6,3 +6,4 @@ _*.nb
 *.pyc
 .DS_Store
 *~
+.olex
