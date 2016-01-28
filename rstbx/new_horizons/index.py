@@ -35,6 +35,7 @@ class new_horizons_state:
                             horizon_phil = self.horizons_phil)
     self.indexing_ai = ai
     #------------------------------------------------------------
+    #print "DEBUG:: self.horizons_phil.compatibility_allow==", self.horizons_phil.compatibility_allow
     if self.horizons_phil.compatibility_allow==False:
       M = best_character_to_IndexPrinter(ai,P,self.pd,True,self.horizons_phil)
     else:
@@ -55,8 +56,10 @@ class new_horizons_state:
       IC.show()
      if 1:
       from rstbx.new_horizons.oscillation_shots import IntegrateCharacters
+      #print "DEBUG:: M.best()[-1]['integration']['resolution']", M.best()[-1]['integration']['resolution'] <- Error. no 'integration'
       IC = IntegrateCharacters(M,self.pd,self.horizons_phil,files,
         spotfinder_results)
+      #print "DEBUG:: M.best()[-1]['integration']['resolution']", M.best()[-1]['integration']['resolution']
       IC.find_best()
       IC.save_best()
       IC.show()

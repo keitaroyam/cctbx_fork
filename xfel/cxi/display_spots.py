@@ -209,11 +209,12 @@ def run_one_index(path, *arguments, **kwargs):
           "refinements_pickle = None",
           "rmsd_tolerance = 5.0",
           "mosflm_rmsd_tolerance = 5.0",
-          "difflimit_sigma_cutoff=2.0",
+          #"difflimit_sigma_cutoff=2.0",
           #"indexing.verbose_cv=True",
           "indexing.open_wx_viewer=%s"%display
           ] + list(arguments[1:])
 
+  print "******DEBUGG:: args=", args
   horizons_phil = load_cxi_phil(target, args)
 
   info = run_one_index_core(horizons_phil)

@@ -109,6 +109,8 @@ class Integrator(object):
 
       except Exception, e:
         int_final = None
+        import traceback
+        print traceback.format_exc() ##YAM
         if hasattr(e, "classname"):
           print e.classname, "for %s:"%self.img,
           error_message = "{}: {}".format(e.classname, e[0].replace('\n',' ')[:50])
@@ -173,6 +175,7 @@ class Integrator(object):
         import traceback
         print
         print self.img
+        print traceback.format_exc() ##YAM
         raise Exception("".join(traceback.format_exception(*sys.exc_info())))
         sys.exit()
 

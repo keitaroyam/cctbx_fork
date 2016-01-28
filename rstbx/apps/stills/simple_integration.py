@@ -36,6 +36,7 @@ class IntegrationMetaProcedure(integration_core,slip_callbacks):
   def get_predictions_accounting_for_centering(self,cb_op_to_primitive=None,**kwargs):
     # interface requires this function to set current_orientation
     # in the actual setting used for Miller index calculation
+    #print "**DEBUG:: In get_predictions_accounting_for_centering()"
     if (self.horizons_phil.known_setting is None or self.horizons_phil.known_setting == self.setting_id ) and \
         self.horizons_phil.integration.model in ["use_case_3_simulated_annealing",
                                                 "use_case_3_simulated_annealing_7",
@@ -145,6 +146,7 @@ class IntegrationMetaProcedure(integration_core,slip_callbacks):
          self.inputai.setMosaicity(down)
       return
 
+    print "**DEBUG:: cb_op_to_primitive", cb_op_to_primitive
     if cb_op_to_primitive==None:
 
       predicted = self.inputai.predict_all(
@@ -188,6 +190,7 @@ class IntegrationMetaProcedure(integration_core,slip_callbacks):
     return spots
 
   def integration_concept(self,image_number=0,cb_op_to_primitive=None,verbose=False,**kwargs):
+    #print "**DEBUG:: In integration_concept"
     self.image_number = image_number
     NEAR = 10
     pxlsz = self.pixel_size

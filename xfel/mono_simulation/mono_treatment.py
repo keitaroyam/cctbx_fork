@@ -78,6 +78,7 @@ class refinement(refinement_base):
   grid = xrange(-20,20)
 
   def __init__(OO,self,use_inverse_beam=False,mosaic_refinement_target="LSQ",pvr_fix=True):
+    print "::DEBUG mosaic_refinement_target==", mosaic_refinement_target
     OO.mosaic_refinement_target = mosaic_refinement_target # least squares or max-likelihood
     OO.pvr_fix = pvr_fix
     refinement_base.__init__(OO,self,use_inverse_beam)
@@ -255,6 +256,7 @@ class refinement(refinement_base):
 
   def refine_rotx_roty2(OO,enable_rotational_target=True):
 
+      #print "**DEBUG:: In refine_rotx_roty2"
       helper = OO.per_frame_helper_factory()
       helper.restart()
 

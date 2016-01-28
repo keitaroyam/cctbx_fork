@@ -43,11 +43,13 @@ class postref_handler(object):
     txt_exception = ' {0:40} ==> '.format(img_filename_only)
 
     observations = observations_pickle["observations"][0]
+    res_lim = max(0.1, observations_pickle.get("resolution_limit", 0.1)) # YAM
 
     detector_distance_mm = observations_pickle['distance']
     mm_predictions = iparams.pixel_size_mm*(observations_pickle['mapped_predictions'][0])
     xbeam = observations_pickle["xbeam"]
     ybeam = observations_pickle["ybeam"]
+    print "DEBUG:: xbeam, ybeam=", xbeam, ybeam 
     alpha_angle_obs = flex.double([math.atan(abs(pred[0]-xbeam)/abs(pred[1]-ybeam)) \
                                    for pred in mm_predictions])
     spot_pred_x_mm = flex.double([pred[0]-xbeam for pred in mm_predictions])
@@ -63,8 +65,13 @@ class postref_handler(object):
         print 'Horizontal polarization fraction is not correct. The value must be >= 0 and <= 1'
         print 'No polarization correction. Continue with post-refinement'
       else:
-        phi_angle_obs = flex.double([math.atan2(pred[1]-ybeam, pred[0]-xbeam) \
-                                         for pred in mm_predictions])
+        if iparams.swap_xy_in_polarization_correction:
+          print "DEBUG:: applying fixed Polarization correction"
+          phi_angle_obs = flex.double([math.atan2(pred[0]-xbeam, pred[1]-ybeam) \
+                                           for pred in mm_predictions]) # YAM
+        else:
+          phi_angle_obs = flex.double([math.atan2(pred[1]-ybeam, pred[0]-xbeam) \
+                                           for pred in mm_predictions])
         bragg_angle_obs = observations.two_theta(wavelength).data()
         P = ((fx*((np.sin(phi_angle_obs)**2)+((np.cos(phi_angle_obs)**2)*np.cos(bragg_angle_obs)**2)))+\
           (fy*((np.cos(phi_angle_obs)**2)+((np.sin(phi_angle_obs)**2)*np.cos(bragg_angle_obs)**2))))
@@ -72,6 +79,8 @@ class postref_handler(object):
         sigI_prime =observations.sigmas()/P
         observations = observations.customized_copy(data=flex.double(I_prime),
                                                     sigmas=flex.double(sigI_prime))
+        if 0: # DEBUG YAM
+          for x,y,p in zip(spot_pred_x_mm, spot_pred_y_mm, P): print "pola:",x,y,p
 
     #set observations with target space group - !!! required for correct
     #merging due to map_to_asu command.
@@ -139,7 +148,8 @@ class postref_handler(object):
 
 
     #filter resolution
-    i_sel_res = observations.resolution_filter_selection(d_max=iparams.merge.d_max, d_min=iparams.merge.d_min)
+    print "resolution limit=", res_lim
+    i_sel_res = observations.resolution_filter_selection(d_max=iparams.merge.d_max, d_min=max(iparams.merge.d_min, 1./(1./res_lim+iparams.push_res*.1))) # YAM
     observations = observations.select(i_sel_res)
     alpha_angle_obs = alpha_angle_obs.select(i_sel_res)
     spot_pred_x_mm = spot_pred_x_mm.select(i_sel_res)
@@ -187,7 +197,7 @@ class postref_handler(object):
 
 
     if iparams.flag_apply_b_by_frame:
-      try:
+      if 1:#try:
         from mod_util import mx_handler
         mxh = mx_handler()
         asu_contents = mxh.get_asu_contents(iparams.n_residues)
@@ -221,8 +231,8 @@ class postref_handler(object):
         #spot_pred_x_mm = spot_pred_x_mm.select(select_flags)
         #spot_pred_y_mm = spot_pred_y_mm.select(select_flags)
 
-      except Exception:
-        return None, 'Warning: problem with Wilson B-factor - continue.'
+      #except Exception:
+      #  return None, 'Warning: problem with Wilson B-factor - continue.'
 
     if iparams.flag_replace_sigI:
       observations = observations.customized_copy(sigmas=flex.sqrt(observations.data()))
@@ -410,7 +420,7 @@ class postref_handler(object):
                                                            spot_pred_x_mm, spot_pred_y_mm,
                                                            detector_distance_mm,
                                                            iparams.partiality_model,
-                                                           iparams.flag_beam_divergence)
+                                                           iparams.flag_beam_divergence, debug=True) # YAM debug=True
 
     #calculate the new crystal orientation
     O = sqr(uc_fin.orthogonalization_matrix()).transpose()
@@ -565,7 +575,7 @@ class postref_handler(object):
                                                           ry, rz, r0, re, two_theta, alpha_angle, wavelength,
                                                           crystal_init_orientation, spot_pred_x_mm, spot_pred_y_mm,
                                                           detector_distance_mm, iparams.partiality_model,
-                                                          iparams.flag_beam_divergence)
+                                                          iparams.flag_beam_divergence, debug=True) # YAM debug=True
 
     if iparams.flag_plot_expert:
       n_bins = 20

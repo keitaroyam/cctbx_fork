@@ -66,7 +66,7 @@ def standard_error_of_the_estimate(y, y_model, n_params):
 def calc_partiality_anisotropy_set(my_uc, rotx, roty, miller_indices, ry, rz, r0, re,
     bragg_angle_set, alpha_angle_set, wavelength, crystal_init_orientation,
     spot_pred_x_mm_set, spot_pred_y_mm_set, detector_distance_mm,
-    partiality_model, flag_beam_divergence):
+    partiality_model, flag_beam_divergence, debug=False): # YAM debug= option
   #use III.4 in Winkler et al 1979 (A35; P901) for set of miller indices
   O = sqr(my_uc.orthogonalization_matrix()).transpose()
   R = sqr(crystal_init_orientation.crystal_rotation_matrix()).transpose()
@@ -79,6 +79,8 @@ def calc_partiality_anisotropy_set(my_uc, rotx, roty, miller_indices, ry, rz, r0
   delta_xy_set = flex.double()
   rs_set = flex.double()
   rh_set = flex.double()
+  if debug: print "DEBUG:: rotxy_in_deg=", rotx/3.1415*180., roty/3.1415*180. #YAM
+  if debug: print "DEBUG:: cell=", my_uc.parameters() #YAM
   for miller_index, bragg_angle, alpha_angle, spot_pred_x_mm, spot_pred_y_mm in \
       zip(miller_indices, bragg_angle_set, alpha_angle_set,
           spot_pred_x_mm_set, spot_pred_y_mm_set):
@@ -124,6 +126,8 @@ def calc_partiality_anisotropy_set(my_uc, rotx, roty, miller_indices, ry, rz, r0
     pred_xy = col((spot_pred_x_mm, spot_pred_y_mm))
     calc_xy = col((dx_mm, dy_mm))
     diff_xy = pred_xy - calc_xy
+    if 0:#debug:
+       print "DEBUG:: % 3d % 3d % 3d: d_xy_um= |(%.2f,%.2f) - (%.2f,%.2f)| = |(%.2f,%.2f)| = %.3f" %(h[0],h[1],h[2],pred_xy[0]*1000, pred_xy[1]*1000, calc_xy[0]*1000, calc_xy[1]*1000, diff_xy[0]*1000,diff_xy[1]*1000, diff_xy.length()*1000) #YAM
     delta_xy_set.append(diff_xy.length())
 
   return partiality_set, delta_xy_set, rs_set, rh_set

@@ -15,9 +15,11 @@ class IntegrateCharacters:
     self.triclinic = self.M.best()[-1]
     fres = ResLimitControl(self.process_dictionary,self.horizons_phil)
 
+    #print "Calling integrate_one_character() from IntegrateCharacters.__init__"
     self.triclinic['integration'] = self.integrate_one_character(
       setting=self.triclinic,
       integration_limit=fres.current_limit)
+    #print "DEBUG:: self.triclinic['integration']['resolution']", self.triclinic['integration']['resolution']
     #return # Enforces legacy behavior--no recycling to expand the integration limit
             # Comment this "return" in for testing without the macrocycle
     #With appropriate safeguards, macrocycle gives better resolution estimate:
@@ -39,6 +41,7 @@ class IntegrateCharacters:
 
       results = trial["results"]
       obs = [item.get_obs(trial["spacegroup"]) for item in results]
+      #print "DEBUG:: Calling A.stats_mtz(trial,obs)"
       A.stats_mtz(trial,obs)
       #print A
     if 'trial' in vars().keys(): self.triclinic['integration'] = trial
@@ -97,6 +100,7 @@ class IntegrateCharacters:
         from rstbx.apps.stills.dials_refinement_preceding_integration import integrate_one_frame
         integrate_worker = integrate_one_frame(self.triclinic["integration"]["results"][0])
       else:
+        #print "**DEBUG:: using rstbx.apps.stills.deltapsi_refinement_preceding_integration"
         from rstbx.apps.stills.deltapsi_refinement_preceding_integration import integrate_one_frame
         integrate_worker = integrate_one_frame()
       integrate_worker.inputai = ai
@@ -453,6 +457,7 @@ class ResLimitControl:
   def __init__(self,pd,horizons_phil):
     initialVolumeFactor = 1.8 # Legacy value=1.5 prior to 7/17/07
     self.subsequentVolumeFactor = 1.5 # this value not used by stats_mtz; see stats_mtz code
+    #print "DEBUG:: ResLimitControl: horizons_phil.mosflm_integration_reslimit_override==", horizons_phil.mosflm_integration_reslimit_override
     if horizons_phil.mosflm_integration_reslimit_override!=None:
       self.initial_limit = horizons_phil.mosflm_integration_reslimit_override
       self.outer_limit = self.initial_limit
@@ -474,6 +479,7 @@ class ResLimitControl:
         algorithm = horizons_phil.mosflm_safety_algorithm)
 
       self.outer_limit = safety
+      #print "**DEBUG:: max((trial_reslimit,safety)):", trial_reslimit,safety
       self.initial_limit = max((trial_reslimit,safety))
       """synopsis:
       LABELIT integrates to determine the best-estimate of

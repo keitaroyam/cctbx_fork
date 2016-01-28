@@ -296,6 +296,13 @@ percent_cone_fraction = 5.0
 flag_include_negatives = True
   .type = bool
   .help = Set to False to exlude negative measurements.
+
+# YAM
+push_res = 1000
+  .type = float
+  .help = CrystFEL style push-res option (nm^-1).
+swap_xy_in_polarization_correction = false
+  .type = bool
 """)
 
 txt_help = """**************************************************************************************************
